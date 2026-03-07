@@ -16,7 +16,7 @@ namespace KillWishCommand
             IPart part = new() { ParentObject = obj };
             Cell cell = part.PickDestinationCell(80, AllowVis.OnlyVisible, Locked: true, IgnoreSolid: true, IgnoreLOS: true, RequireCombat: true, XRL.UI.PickTarget.PickStyle.EmptyCell, text, Snap: true);
             pick = cell?.GetCombatTarget(obj, true, true, true);
-            bool value = pick != null;
+            bool value = pick != null && pick != obj;
             if (!value && cell != null)
                 XRL.UI.Popup.ShowFail(cell.HasCombatObject() ? $"There is no one there you can {text}." : $"There is no one there to {text}");
             return value;
