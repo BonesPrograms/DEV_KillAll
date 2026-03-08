@@ -1,9 +1,8 @@
 using XRL;
 using XRL.World;
-using XRL.World.Parts;
 using System.Linq;
 using XRL.Wish;
-using XRL.UI;
+using System.Collections.Generic;
 
 namespace KillWishCommand
 {
@@ -11,7 +10,7 @@ namespace KillWishCommand
     public static class KillWishCommand
     {
 
-         static bool PickTarget(GameObject obj, string text, out GameObject pick)
+        static bool PickTarget(GameObject obj, string text, out GameObject pick)
         {
             IPart part = new() { ParentObject = obj };
             Cell cell = part.PickDestinationCell(80, AllowVis.OnlyVisible, Locked: true, IgnoreSolid: true, IgnoreLOS: true, RequireCombat: true, XRL.UI.PickTarget.PickStyle.EmptyCell, text, Snap: true);
@@ -35,21 +34,15 @@ namespace KillWishCommand
 
         public static void KillAll()
         {
-            GameObject GO = The.Player;
-            Zone zone = GO.CurrentZone;
-            for (int y = 0; y < zone.Height; y++)
-            {
-                for (int x = 0; x < zone.Width; x++)
-                {
-                    Cell cell = zone.Map[x][y];
-                    var objects = cell.Objects.Where(x => x != GO && x.IsCombatObject());
-                    foreach (var obj in objects)
-                    {
-                        obj.TakeDamage(100000, GO, "KillAll");
-                    }
-                }
+            GameObject player = The.Player;
+            Zone zone = player.CurrentZone;
+            List<GameObject> combatobjects = player.CurrentZone.GetObjects(x => x != player && x.IsCombatObject());
 
+            foreach (var obj in combatobjects)
+            {
+                obj.TakeDamage(100000, player, "KillAll");
             }
+            
             IComponent<GameObject>.AddPlayerMessage("AllKilled");
         }
     }
